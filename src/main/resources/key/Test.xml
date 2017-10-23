@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.abc.mapper.StudentMapper">
+
+    <select id="getById" parameterType="int" resultMap="studentResultMap">
+
+        select id,name,gender,major,grade,supervisor_id from student where id=#{id}
+
+        </select>
+
+    <select id="selectSupervisor" parameterType="int" resultMap="supervisorResultMap">
+
+        select id,name,gender,title,research_area
+
+        from teacher where id=#{id}
+
+        </select>
+
+    <resultMap id="studentResultMap" type="Student">
+
+        <id property="id" column="id"/>
+
+        <result property="name" column="name"/>
+
+        <result property="gender" column="gender"/>
+
+        <result property="major" column="major"/>
+
+        <result property="grade" column="grade"/>
+
+        <!--column="supervisor_id"不能少。此列的值作为参数
+
+        传递给要引用的select语句，用来查询相应学生的指导教师
+
+        的信息。select属性指定要引用的select语句-->
+
+        <association property="supervisor" javaType="Teacher"
+
+                     column="supervisor_id" select="selectSupervisor"/>
+
+    </resultMap>
+
+    <!--教师实体映射-->
+
+    <resultMap id="supervisorResultMap" type="Teacher">
+
+        <id property="id" column="id"/>
+
+        <result property="name" column="name"/>
+
+        <result property="gender" column="gender"/>
+
+        <result property="researchArea" column="research_area"/>
+
+        <result property="title" column="title"/>
+
+    </resultMap>
+
+</mapper>

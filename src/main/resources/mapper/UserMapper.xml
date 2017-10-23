@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shrbank.dao.UserMapper">
+    <select id="getUser" parameterType="String" resultMap="UserResultMap">
+        <![CDATA[
+			SELECT ST.id,ST.name,ST.age,dt.ID as DEPT_ID,dt.dept_name from user ST,dept dt
+				WHERE ST.ID = #{id} and ST.DEPT_ID = dt.ID
+        ]]>
+    </select>
+
+    <select id="getUserNew" resultMap="UserResultMapNew">
+        <![CDATA[
+			SELECT ST.id,ST.name,ST.age,ST.dept_id from user ST
+        ]]>
+    </select>
+
+
+    <resultMap id="UserResultMap" type="com.shrbank.entity.UserEntity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <!--<result column="dept_id" jdbcType="INTEGER" property="deptId"/>-->
+        <association property="dept" resultMap="com.shrbank.dao.DeptMapper.DeptResultMap"/>
+    </resultMap>
+
+    <resultMap id="UserResultMapNew" type="com.shrbank.entity.UserEntity">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <!--<result column="dept_id" jdbcType="INTEGER" property="deptId"/>-->
+        <association property="dept" column="DEPT_ID" fetchType="lazy"
+                     select="selectDept"/>
+    </resultMap>
+
+    <select id="selectDept"
+            parameterType="java.lang.String"
+            resultMap="DeptResultMapBak">
+        select ID AS DEPT_ID,DEPT_NAME from
+        dept where ID=#{id}
+    </select>
+
+    <resultMap id="DeptResultMapBak" type="com.shrbank.entity.DeptEntity">
+        <id column="dept_id" jdbcType="INTEGER" property="deptId"/>
+        <!--<result column="dept_id" jdbcType="VARCHAR" property="deptId"/>-->
+        <result column="dept_name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+</mapper>
